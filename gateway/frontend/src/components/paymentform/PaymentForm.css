@@ -1,0 +1,365 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
+
+.pf-root * { box-sizing: border-box; margin: 0; padding: 0; }
+
+.pf-root {
+    font-family: 'DM Sans', sans-serif;
+    background: #f5f4f0;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 40px 16px;
+}
+
+.pf-container {
+    width: 100%;
+    max-width: 520px;
+}
+
+.pf-header {
+    margin-bottom: 24px;
+}
+
+.pf-header h1 {
+    font-size: 22px;
+    font-weight: 600;
+    color: #111;
+    letter-spacing: -0.4px;
+}
+
+.pf-header p {
+    font-size: 13px;
+    color: #888;
+    margin-top: 4px;
+}
+
+/* ── Card Preview ── */
+.pf-card-preview {
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 24px;
+    min-height: 200px;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    color: #fff;
+    transition: opacity 0.3s;
+    box-shadow: 0 20px 60px rgba(48, 43, 99, 0.35);
+}
+
+.pf-card-preview.cvv-focus { opacity: 0.65; }
+
+.pf-card-orb1 {
+    position: absolute;
+    top: -70px; right: -70px;
+    width: 220px; height: 220px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.05);
+    pointer-events: none;
+}
+
+.pf-card-orb2 {
+    position: absolute;
+    bottom: -50px; left: 40px;
+    width: 180px; height: 180px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+    pointer-events: none;
+}
+
+.pf-card-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.pf-chip {
+    width: 44px; height: 34px;
+    background: linear-gradient(135deg, #f5d060, #c8a020);
+    border-radius: 7px;
+    position: relative;
+}
+
+.pf-chip::before {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 30px; height: 22px;
+    border: 1.5px solid rgba(0,0,0,0.18);
+    border-radius: 4px;
+}
+
+.pf-network {
+    display: flex;
+    align-items: center;
+}
+
+.pf-circle {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    opacity: 0.92;
+}
+
+.pf-circle-r { background: #eb001b; margin-right: -13px; }
+.pf-circle-o { background: #f79e1b; }
+
+.pf-card-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 19px;
+    letter-spacing: 3px;
+    margin-bottom: 22px;
+    color: rgba(255,255,255,0.9);
+    min-height: 28px;
+}
+
+.pf-card-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.pf-card-label {
+    font-size: 9px;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 5px;
+}
+
+.pf-card-value {
+    font-size: 13px;
+    color: rgba(255,255,255,0.85);
+    letter-spacing: 0.5px;
+    min-height: 20px;
+}
+
+/* ── Form Card ── */
+.pf-form-card {
+    background: #fff;
+    border-radius: 20px;
+    padding: 28px;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+}
+
+/* ── Tabs ── */
+.pf-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    background: #f5f4f0;
+    border-radius: 12px;
+    padding: 4px;
+}
+
+.pf-tab {
+    flex: 1;
+    padding: 9px 12px;
+    border: none;
+    border-radius: 9px;
+    background: transparent;
+    color: #999;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    transition: all 0.18s;
+}
+
+.pf-tab.active {
+    background: #fff;
+    color: #111;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+}
+
+/* ── Section Divider ── */
+.pf-section-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #aaa;
+    margin: 20px 0 14px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+/* ── Fields ── */
+.pf-field { margin-bottom: 14px; }
+
+.pf-field label {
+    display: block;
+    font-size: 12px;
+    font-weight: 500;
+    color: #666;
+    margin-bottom: 6px;
+    letter-spacing: 0.2px;
+}
+
+.pf-field input,
+.pf-field select {
+    width: 100%;
+    padding: 10px 13px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    border: 1.5px solid #eee;
+    border-radius: 10px;
+    background: #fafafa;
+    color: #111;
+    outline: none;
+    transition: border-color 0.15s, background 0.15s, box-shadow 0.15s;
+    appearance: none;
+}
+
+.pf-field input:focus,
+.pf-field select:focus {
+    border-color: #302b63;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(48,43,99,0.08);
+}
+
+.pf-field input.mono {
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 2px;
+}
+
+.pf-field input::placeholder { color: #ccc; letter-spacing: normal; font-family: 'DM Sans', sans-serif; }
+
+.pf-field input.error { border-color: #e74c3c; }
+
+.pf-row { display: flex; gap: 12px; }
+.pf-row .pf-field { flex: 1; }
+
+.pf-phone-row {
+    display: flex;
+    gap: 8px;
+}
+
+.pf-phone-row .pf-field:first-child { flex: 0 0 100px; }
+.pf-phone-row .pf-field:last-child { flex: 1; }
+
+/* ── Card Brands ── */
+.pf-brands {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.pf-brand {
+    padding: 3px 9px;
+    border: 1px solid #eee;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #999;
+    background: #fafafa;
+    font-weight: 500;
+}
+
+/* ── Security Badge ── */
+.pf-security {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 13px;
+    background: #f0fdf4;
+    border-radius: 10px;
+    margin: 20px 0;
+    border: 1px solid #d1fae5;
+}
+
+.pf-security span {
+    font-size: 12px;
+    color: #059669;
+    font-weight: 500;
+}
+
+/* ── Pay Button ── */
+.pf-pay-btn {
+    width: 100%;
+    padding: 14px;
+    background: linear-gradient(135deg, #0f0c29, #302b63);
+    color: #fff;
+    border: none;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.2px;
+    transition: opacity 0.15s, transform 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.pf-pay-btn:hover { opacity: 0.88; }
+.pf-pay-btn:active { transform: scale(0.99); }
+.pf-pay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+.pf-pay-btn.error-state { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+
+/* ── Success ── */
+.pf-success {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 32px 0 8px;
+    gap: 10px;
+}
+
+.pf-success-circle {
+    width: 64px; height: 64px;
+    border-radius: 50%;
+    background: #f0fdf4;
+    border: 1.5px solid #d1fae5;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 4px;
+}
+
+.pf-success h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #111;
+}
+
+.pf-success p {
+    font-size: 13px;
+    color: #888;
+    max-width: 260px;
+    line-height: 1.6;
+}
+
+.pf-success-btn {
+    margin-top: 16px;
+    padding: 10px 28px;
+    background: #f5f4f0;
+    color: #333;
+    border: 1.5px solid #eee;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: background 0.15s;
+}
+
+.pf-success-btn:hover { background: #eee; }
+
+/* ── Spinner ── */
+@keyframes spin { to { transform: rotate(360deg); } }
+.pf-spinner {
+    width: 18px; height: 18px;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+}
