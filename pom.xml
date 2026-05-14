@@ -10,9 +10,10 @@
   <version>1.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <modules>
-    <module>orchetrator</module>
+    <module>orchestrator</module>
     <module>utilities</module>
     <module>gateway</module>
+    <module>serviceregistory</module>
   </modules>
 
 

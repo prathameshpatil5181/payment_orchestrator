@@ -1,6 +1,41 @@
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import "./PaymentForm.css";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import { gatewayClient, tokenizerClient } from "../../api/axiosClient";
+
+const CURRENCY_SYMBOLS = {
+  USD: "$",
+  EUR: "€",
+  GBP: "£",
+  INR: "₹",
+  AUD: "A$",
+  CAD: "C$",
+  SGD: "S$",
+  AED: "د.إ",
+  JPY: "¥",
+};
+
+function getSessionIdFromUrl() {
+  const pathSegments = window.location.pathname.split("/").filter(Boolean);
+  return pathSegments[pathSegments.length - 1] || "";
+}
+
+async function fetchSessionDetails(sessionId) {
+  const { data } = await gatewayClient.get("/gateway/get_session", {
+    params: { sessionId },
+    headerProfile: "none", // source request — captures headers, doesn't send them
+  });
+  return data;
+}
+
+function formatAmount(amount, currency) {
+  const symbol = CURRENCY_SYMBOLS[currency] || currency + " ";
+  const num = parseFloat(amount);
+  if (isNaN(num)) return `${symbol}0.00`;
+  // JPY has no decimal places
+  const decimals = currency === "JPY" ? 0 : 2;
+  return `${symbol}${num.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals })}`;
+}
 
 const COUNTRY_CODES = [
   { code: "+91", label: "🇮🇳 +91" },
@@ -94,6 +129,20 @@ function DebitIcon() {
 }
 
 export default function PaymentForm() {
+  const sessionId = useMemo(() => getSessionIdFromUrl(), []);
+
+  const { data: sessionData, isLoading: sessionLoading, isError: sessionError } = useQuery({
+    queryKey: ["session", sessionId],
+    queryFn: () => fetchSessionDetails(sessionId),
+    enabled: !!sessionId,
+    retry: 2,
+    staleTime: 10000,
+  });
+
+  const amount = sessionData?.amount ?? DEFAULT_PAYMENT_AMOUNT;
+  const currency = (sessionData?.currency ?? DEFAULT_PAYMENT_CURRENCY).toUpperCase();
+  const formattedAmount = useMemo(() => formatAmount(amount / 100, currency), [amount, currency]);
+
   const [tab, setTab] = useState("credit");
   const [cvvFocus, setCvvFocus] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -101,10 +150,10 @@ export default function PaymentForm() {
   const [btnError, setBtnError] = useState(false);
 
   const [form, setForm] = useState({
-    name: "",
-    number: "",
-    expiry: "",
-    cvv: "",
+    name: "test",
+    number: "4242 4242 4242 4242",
+    expiry: "12/35",
+    cvv: "123",
     phone: "",
     countryCode: "+91",
     address1: "",
@@ -158,53 +207,36 @@ export default function PaymentForm() {
     return errs;
   };
 
+
   const createCardToken = async () => {
-    const response = await fetch(
-      "http://localhost:5002/orbyte/tokenizer/api/v1/cardtoken/tokenize",
+    const { data } = await tokenizerClient.post(
+      "/orbyte/tokenizer/api/v1/cardtoken/tokenize",
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          cardNumber: form.number,
-          cvv: form.cvv,
-          expiryMonth: form.expiry.split("/")[0].trim(),
-          expiryYear: form.expiry.split("/")[1].trim(),
-        }),
+        cardNumber: form.number,
+        cvv: form.cvv,
+        expiryMonth: form.expiry.split("/")[0].trim(),
+        expiryYear: form.expiry.split("/")[1].trim(),
       },
+      { headerProfile: "tokenizer" }
     );
-
-    if (!response.ok) {
-      throw new Error("Network response was not ok");
-    }
-
-    return response.json();
+    return data;
   };
 
   const createStripePayment = async (tokenData) => {
     const token = tokenData.tokenId;
-    const response = await fetch(
-      "http://localhost:5001/orbyte/orchestrator/api/v1/stripe/createPayment",
+    const { data } = await gatewayClient.post(
+      "/gateway/initiate_payment",
       {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          amount: "200",
-          currency: "USD",
-          token,
-          paymentType: "card",
-        }),
+        paymentType: "CARD",
+        amount: amount,
+        currency,
+        paymentMethodDetails: {
+          cardToken: token,
+        }
       },
+      { headerProfile: "gateway" }
     );
-
-    if (!response.ok) {
-      throw new Error("Failed to create Stripe payment");
-    }
-
-    return response.json();
+    return data;
   };
 
   const mutation = useMutation({
@@ -265,6 +297,31 @@ export default function PaymentForm() {
             <h1>Secure Checkout</h1>
             <p>Complete your purchase safely and instantly</p>
           </div>
+
+          {/* Session Loading / Error States */}
+          {sessionLoading && (
+            <div className="pf-amount-banner pf-amount-loading">
+              <div className="pf-amount-label">Loading session…</div>
+              <div className="pf-amount-value">
+                <div className="pf-skeleton" style={{ width: 120, height: 28, borderRadius: 8 }} />
+              </div>
+            </div>
+          )}
+
+          {sessionError && (
+            <div className="pf-amount-banner pf-amount-error">
+              <div className="pf-amount-label">⚠ Unable to load payment details</div>
+            </div>
+          )}
+
+          {/* Amount Display */}
+          {!sessionLoading && !sessionError && (
+            <div className="pf-amount-banner">
+              <div className="pf-amount-label">Amount to pay</div>
+              <div className="pf-amount-value">{formattedAmount}</div>
+              <div className="pf-amount-currency">{currency}</div>
+            </div>
+          )}
 
           {/* Card Preview */}
           <div className={`pf-card-preview${cvvFocus ? " cvv-focus" : ""}`}>
@@ -533,7 +590,7 @@ export default function PaymentForm() {
                     "Please fill all required fields"
                   ) : (
                     <>
-                      <LockIcon /> Pay securely
+                      <LockIcon /> Pay {formattedAmount}
                     </>
                   )}
                 </button>
