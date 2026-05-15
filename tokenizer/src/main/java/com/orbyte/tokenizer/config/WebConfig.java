@@ -23,9 +23,11 @@ public class WebConfig implements WebMvcConfigurer {
 
         if ("dev".equals(environment)) {
             registry.addMapping("/**")
-                    .allowedOrigins("http://localhost:3000", "http://localhost:5173","http://localhost:8080")
+                    .allowedOrigins("http://localhost:3000", "http://localhost:5173","http://localhost:5003")
                     .allowedMethods("*")
-                    .allowedHeaders("*");
+                    .allowedHeaders("*")
+                    .allowCredentials(true); 
+
         }
     }
 

@@ -1,6 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap');
 
-.pf-root * { box-sizing: border-box; margin: 0; padding: 0; }
+.pf-root * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
 .pf-root {
     font-family: 'DM Sans', sans-serif;
@@ -34,6 +38,107 @@
     margin-top: 4px;
 }
 
+/* ── Amount Banner ── */
+.pf-amount-banner {
+    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(48, 43, 99, 0.2);
+}
+
+.pf-amount-banner::before {
+    content: '';
+    position: absolute;
+    top: -30px;
+    right: -30px;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.04);
+    pointer-events: none;
+}
+
+.pf-amount-banner::after {
+    content: '';
+    position: absolute;
+    bottom: -20px;
+    left: 30px;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.03);
+    pointer-events: none;
+}
+
+.pf-amount-label {
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    color: rgba(255, 255, 255, 0.5);
+    flex-shrink: 0;
+}
+
+.pf-amount-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: #fff;
+    letter-spacing: -0.5px;
+    line-height: 1;
+    margin-left: auto;
+    font-family: 'DM Sans', sans-serif;
+}
+
+.pf-amount-currency {
+    font-size: 12px;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.55);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    flex-shrink: 0;
+    backdrop-filter: blur(8px);
+}
+
+/* ── Session Loading Skeleton ── */
+@keyframes shimmer {
+    0% {
+        background-position: -200px 0;
+    }
+
+    100% {
+        background-position: 200px 0;
+    }
+}
+
+.pf-skeleton {
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.08) 25%, rgba(255, 255, 255, 0.18) 50%, rgba(255, 255, 255, 0.08) 75%);
+    background-size: 400px 100%;
+    animation: shimmer 1.4s ease infinite;
+    display: inline-block;
+}
+
+.pf-amount-loading .pf-amount-label {
+    color: rgba(255, 255, 255, 0.4);
+}
+
+.pf-amount-error {
+    background: linear-gradient(135deg, #3b0d0d, #641e1e, #4a1414) !important;
+    box-shadow: 0 8px 32px rgba(100, 30, 30, 0.3) !important;
+}
+
+.pf-amount-error .pf-amount-label {
+    color: rgba(255, 200, 200, 0.8);
+    font-size: 13px;
+}
+
 /* ── Card Preview ── */
 .pf-card-preview {
     border-radius: 20px;
@@ -48,23 +153,29 @@
     box-shadow: 0 20px 60px rgba(48, 43, 99, 0.35);
 }
 
-.pf-card-preview.cvv-focus { opacity: 0.65; }
+.pf-card-preview.cvv-focus {
+    opacity: 0.65;
+}
 
 .pf-card-orb1 {
     position: absolute;
-    top: -70px; right: -70px;
-    width: 220px; height: 220px;
+    top: -70px;
+    right: -70px;
+    width: 220px;
+    height: 220px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.05);
+    background: rgba(255, 255, 255, 0.05);
     pointer-events: none;
 }
 
 .pf-card-orb2 {
     position: absolute;
-    bottom: -50px; left: 40px;
-    width: 180px; height: 180px;
+    bottom: -50px;
+    left: 40px;
+    width: 180px;
+    height: 180px;
     border-radius: 50%;
-    background: rgba(255,255,255,0.04);
+    background: rgba(255, 255, 255, 0.04);
     pointer-events: none;
 }
 
@@ -76,7 +187,8 @@
 }
 
 .pf-chip {
-    width: 44px; height: 34px;
+    width: 44px;
+    height: 34px;
     background: linear-gradient(135deg, #f5d060, #c8a020);
     border-radius: 7px;
     position: relative;
@@ -85,10 +197,12 @@
 .pf-chip::before {
     content: '';
     position: absolute;
-    top: 50%; left: 50%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%);
-    width: 30px; height: 22px;
-    border: 1.5px solid rgba(0,0,0,0.18);
+    width: 30px;
+    height: 22px;
+    border: 1.5px solid rgba(0, 0, 0, 0.18);
     border-radius: 4px;
 }
 
@@ -98,20 +212,27 @@
 }
 
 .pf-circle {
-    width: 36px; height: 36px;
+    width: 36px;
+    height: 36px;
     border-radius: 50%;
     opacity: 0.92;
 }
 
-.pf-circle-r { background: #eb001b; margin-right: -13px; }
-.pf-circle-o { background: #f79e1b; }
+.pf-circle-r {
+    background: #eb001b;
+    margin-right: -13px;
+}
+
+.pf-circle-o {
+    background: #f79e1b;
+}
 
 .pf-card-number {
     font-family: 'DM Mono', monospace;
     font-size: 19px;
     letter-spacing: 3px;
     margin-bottom: 22px;
-    color: rgba(255,255,255,0.9);
+    color: rgba(255, 255, 255, 0.9);
     min-height: 28px;
 }
 
@@ -123,7 +244,7 @@
 
 .pf-card-label {
     font-size: 9px;
-    color: rgba(255,255,255,0.45);
+    color: rgba(255, 255, 255, 0.45);
     text-transform: uppercase;
     letter-spacing: 1.5px;
     margin-bottom: 5px;
@@ -131,7 +252,7 @@
 
 .pf-card-value {
     font-size: 13px;
-    color: rgba(255,255,255,0.85);
+    color: rgba(255, 255, 255, 0.85);
     letter-spacing: 0.5px;
     min-height: 20px;
 }
@@ -141,7 +262,7 @@
     background: #fff;
     border-radius: 20px;
     padding: 28px;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
 }
 
 /* ── Tabs ── */
@@ -175,7 +296,7 @@
 .pf-tab.active {
     background: #fff;
     color: #111;
-    box-shadow: 0 1px 6px rgba(0,0,0,0.1);
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* ── Section Divider ── */
@@ -191,7 +312,9 @@
 }
 
 /* ── Fields ── */
-.pf-field { margin-bottom: 14px; }
+.pf-field {
+    margin-bottom: 14px;
+}
 
 .pf-field label {
     display: block;
@@ -221,7 +344,7 @@
 .pf-field select:focus {
     border-color: #302b63;
     background: #fff;
-    box-shadow: 0 0 0 3px rgba(48,43,99,0.08);
+    box-shadow: 0 0 0 3px rgba(48, 43, 99, 0.08);
 }
 
 .pf-field input.mono {
@@ -229,20 +352,37 @@
     letter-spacing: 2px;
 }
 
-.pf-field input::placeholder { color: #ccc; letter-spacing: normal; font-family: 'DM Sans', sans-serif; }
+.pf-field input::placeholder {
+    color: #ccc;
+    letter-spacing: normal;
+    font-family: 'DM Sans', sans-serif;
+}
 
-.pf-field input.error { border-color: #e74c3c; }
+.pf-field input.error {
+    border-color: #e74c3c;
+}
 
-.pf-row { display: flex; gap: 12px; }
-.pf-row .pf-field { flex: 1; }
+.pf-row {
+    display: flex;
+    gap: 12px;
+}
+
+.pf-row .pf-field {
+    flex: 1;
+}
 
 .pf-phone-row {
     display: flex;
     gap: 8px;
 }
 
-.pf-phone-row .pf-field:first-child { flex: 0 0 100px; }
-.pf-phone-row .pf-field:last-child { flex: 1; }
+.pf-phone-row .pf-field:first-child {
+    flex: 0 0 100px;
+}
+
+.pf-phone-row .pf-field:last-child {
+    flex: 1;
+}
 
 /* ── Card Brands ── */
 .pf-brands {
@@ -300,10 +440,22 @@
     gap: 8px;
 }
 
-.pf-pay-btn:hover { opacity: 0.88; }
-.pf-pay-btn:active { transform: scale(0.99); }
-.pf-pay-btn:disabled { opacity: 0.6; cursor: not-allowed; }
-.pf-pay-btn.error-state { background: linear-gradient(135deg, #c0392b, #e74c3c); }
+.pf-pay-btn:hover {
+    opacity: 0.88;
+}
+
+.pf-pay-btn:active {
+    transform: scale(0.99);
+}
+
+.pf-pay-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.pf-pay-btn.error-state {
+    background: linear-gradient(135deg, #c0392b, #e74c3c);
+}
 
 /* ── Success ── */
 .pf-success {
@@ -316,11 +468,14 @@
 }
 
 .pf-success-circle {
-    width: 64px; height: 64px;
+    width: 64px;
+    height: 64px;
     border-radius: 50%;
     background: #f0fdf4;
     border: 1.5px solid #d1fae5;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 4px;
 }
 
@@ -351,13 +506,21 @@
     transition: background 0.15s;
 }
 
-.pf-success-btn:hover { background: #eee; }
+.pf-success-btn:hover {
+    background: #eee;
+}
 
 /* ── Spinner ── */
-@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 .pf-spinner {
-    width: 18px; height: 18px;
-    border: 2px solid rgba(255,255,255,0.3);
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-top-color: #fff;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
