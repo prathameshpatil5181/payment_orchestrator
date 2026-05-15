@@ -4,7 +4,6 @@ import com.orbyte.constants.Processor;
 import com.orbyte.dto.PaymentRequest;
 import com.orbyte.dto.paymentTypeDtos.CardPaymentDetails;
 import com.orbyte.dto.paymentTypeDtos.PaymentMethodDetails;
-import com.orbyte.orchestrator.constants.StripeConstants;
 import com.orbyte.orchestrator.service.Card;
 import io.netty.util.internal.StringUtil;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +31,7 @@ public class StripeCardHandler implements Card {
         CardPaymentDetails cardPaymentDetails = cardDetailValidator(paymentRequest.getPaymentMethodDetails());
 
         MultiValueMap<String, Object> cardForm = new LinkedMultiValueMap<>();
-        cardForm.set("type", StripeConstants.CARD_PM);
+        cardForm.set("type", "card");
         cardForm.set("card[token]", cardPaymentDetails.getCardToken());
 
         String paymentMethodId = stripe.createPaymentMethod(cardForm);

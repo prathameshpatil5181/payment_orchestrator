@@ -6,6 +6,7 @@ import org.hibernate.annotations.CreationTimestamp;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 
 @Entity
@@ -26,6 +27,9 @@ public class Session {
 
     @Column(nullable = false)
     private String currency;
+
+    @Column(nullable = false)
+    private UUID txnId;
 
     @CreationTimestamp
     private LocalDateTime createdOn;

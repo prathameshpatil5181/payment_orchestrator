@@ -4,11 +4,10 @@ import com.orbyte.dto.PaymentKeyDTO;
 import com.orbyte.gateway.cache.CacheService;
 import com.orbyte.gateway.cache.paymentcache.PaymentCacheService;
 import com.orbyte.gateway.constants.AppContants;
-import com.orbyte.gateway.dto.dtoimpl.PaymentDetailResponseDto;
-import com.orbyte.gateway.dto.dtoimpl.PaymentInfoDTO;
-import com.orbyte.gateway.dto.dtoimpl.PaymentSessionResponse;
+import com.orbyte.gateway.dto.dtoimpl.*;
 import com.orbyte.gateway.entity.Session;
 import com.orbyte.gateway.exception.PaymentSessionCreationException;
+import com.orbyte.gateway.service.RestService;
 import com.orbyte.utils.UniqueGenerator;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +20,7 @@ import java.security.NoSuchAlgorithmException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -29,11 +29,19 @@ public class CreateOrbPaymentService {
 
     private final CacheService cacheService;
     private final PaymentCacheService paymentCacheService;
+    private final RestService restService;
 
     @Transactional
     public String createPaymentSession(@NonNull PaymentInfoDTO paymenInfoDTO) {
 
         try {
+
+            CreateTransactionDto createTransactionDto = CreateTransactionDto.builder().amount(paymenInfoDTO.getAmount()).currency(paymenInfoDTO.getCurrency()).build();
+
+            CreateTransactionResponseDto createTransactionResponseDto = restService.postHandler(AppContants.TRANSACTION_ID_CREATE_URI).body(createTransactionDto).retrieve().body(CreateTransactionResponseDto.class);
+
+            if (createTransactionResponseDto==null || createTransactionResponseDto.getTxnId() == null) throw new PaymentSessionCreationException("Error creating the txn id");
+
 
             String secret = cacheService.getConfigFromCache("orbyte_secret_key");
 
@@ -44,7 +52,7 @@ public class CreateOrbPaymentService {
             String sessionId = generator.generateUniquePaymentKey(paymentKey);
             log.info("generated session id {}", sessionId);
 
-            Session session = Session.builder().sessionId(sessionId).amount(paymenInfoDTO.getAmount()).currency(paymenInfoDTO.getCurrency()).build();
+            Session session = Session.builder().sessionId(sessionId).amount(paymenInfoDTO.getAmount()).currency(paymenInfoDTO.getCurrency()).txnId(UUID.fromString(createTransactionResponseDto.getTxnId())).build();
             paymentCacheService.saveSession(session);
             return generatePaymentUrl(sessionId);
 
@@ -67,7 +75,7 @@ public class CreateOrbPaymentService {
 
         log.debug("Received session {}", session);
 
-        PaymentSessionResponse paymentSessionResponse = PaymentSessionResponse.builder().amount(session.getAmount()).currency(session.getCurrency()).sessionId(session.getSessionId()).transactionId("dummy_id").build();
+        PaymentSessionResponse paymentSessionResponse = PaymentSessionResponse.builder().amount(session.getAmount()).currency(session.getCurrency()).sessionId(session.getSessionId()).transactionId(String.valueOf(session.getTxnId())).build();
 
         log.info("Details of transaction {} is  {}", sessionId, paymentSessionResponse);
 

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Component;
 public class AppContants {
     public static final String CONFIG_CACHE_PREFIX = "config::";
 
-    @Value("${app.url}")
     public static String PAYMENT_SESSION_URI_PREFIX = "http://localhost:5003";
+
+    public static String TRANSACTION_ID_CREATE_URI = "http://orchestrator/orbyte/orchestrator/api/v1/txn/create";
 }
