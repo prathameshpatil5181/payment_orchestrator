@@ -1,8 +1,12 @@
 package com.orbyte.orchestrator.processors.Stripe;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orbyte.constants.PaymentType;
 import com.orbyte.orchestrator.cache.CacheService;
+import com.orbyte.orchestrator.dtos.StripeDtos.CardTxnResult;
 import com.orbyte.orchestrator.exceptions.StripeResponseErrorException;
+import com.orbyte.orchestrator.processors.Stripe.dto.PaymentIntentResponse;
+import com.orbyte.orchestrator.processors.Stripe.dto.PaymentMethodResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
@@ -15,6 +19,7 @@ import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.util.EnumSet;
+import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
@@ -46,7 +51,7 @@ public class Stripe {
                 });
     }
 
-    public String createPaymentMethod(MultiValueMap<String, Object> form) {
+    public PaymentMethodResponse createPaymentMethod(MultiValueMap<String, Object> form) {
         log.info("inside stripe create payment method");
 
         try {
@@ -54,16 +59,14 @@ public class Stripe {
 
             String stripeCreatePaymentMethodApi = cacheService.getConfigFromCache(STRIPE_CREATE_PAYMENTMETHOD_URI);
 
-            Map<String, Object> result =
+            PaymentMethodResponse result =
                     stripePost(stripeCreatePaymentMethodApi)
                             .body(form)
                             .retrieve()
-                            .body(new ParameterizedTypeReference<Map<String, Object>>() {
-                            });
+                            .body(PaymentMethodResponse.class);
 
             log.debug("Stripe create payment method response {}", result.toString());
-
-            return result.get("id").toString();
+            return result;
 
         } catch (HttpClientErrorException ex) {
             String errorBody = ex.getResponseBodyAsString();
@@ -76,7 +79,7 @@ public class Stripe {
 
     }
 
-    public String createPaymentIntent(MultiValueMap<String, Object> form) {
+    public PaymentIntentResponse createPaymentIntent(MultiValueMap<String, Object> form) {
         log.info("inside createPaymentIntent");
 
         try {
@@ -87,13 +90,9 @@ public class Stripe {
 
 
             return stripePost(stripeCreatePayentIntentApi)
-                    .body(form).retrieve().body(String.class);
+                    .body(form).retrieve().body(PaymentIntentResponse.class);
 
-        } catch (HttpClientErrorException ex) {
-            String errorBody = ex.getResponseBodyAsString();
-            log.error("Client error {} ", errorBody);
-            throw new StripeResponseErrorException(ex.getStatusText(), (HttpStatus) ex.getStatusCode());
-        } catch (HttpServerErrorException ex) {
+        }  catch (HttpServerErrorException ex) {
             log.error("Server error: {}", ex.getStatusCode());
             throw new StripeResponseErrorException(ex.getStatusText(), (HttpStatus) ex.getStatusCode());
         }
