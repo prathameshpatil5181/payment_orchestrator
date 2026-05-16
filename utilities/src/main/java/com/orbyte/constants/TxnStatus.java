@@ -1,5 +1,5 @@
 package com.orbyte.constants;
 
 public enum TxnStatus {
-    CREATE
+    CREATE, CAPTURE
 }

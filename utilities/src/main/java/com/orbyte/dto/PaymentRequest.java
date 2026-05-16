@@ -15,6 +15,7 @@ public class PaymentRequest {
 
     String currency;
 
+
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,
             include = JsonTypeInfo.As.EXTERNAL_PROPERTY,

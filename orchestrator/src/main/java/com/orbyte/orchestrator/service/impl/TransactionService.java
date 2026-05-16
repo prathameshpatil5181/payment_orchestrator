@@ -2,8 +2,8 @@ package com.orbyte.orchestrator.service.impl;
 
 import com.github.f4b6a3.uuid.UuidCreator;
 import com.orbyte.orchestrator.cache.TransactionCacheService;
-import com.orbyte.orchestrator.constants.TxnStatus;
-import com.orbyte.orchestrator.constants.TxnSubStatus;
+import com.orbyte.constants.TxnStatus;
+import com.orbyte.constants.TxnSubStatus;
 import com.orbyte.orchestrator.dtos.CreateTransactionDto;
 import com.orbyte.orchestrator.dtos.CreateTransactionResponseDto;
 import com.orbyte.orchestrator.entity.Txn;

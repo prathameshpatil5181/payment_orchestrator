@@ -1,11 +1,11 @@
 package com.orbyte.orchestrator.entity;
 
-import com.orbyte.constants.ModifiedBy;
-import com.orbyte.orchestrator.constants.TxnStatus;
-import com.orbyte.orchestrator.constants.TxnSubStatus;
+import com.orbyte.constants.TxnStatus;
+import com.orbyte.constants.TxnSubStatus;
 import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigInteger;
 import java.time.LocalDateTime;
@@ -61,7 +61,7 @@ public class Txn {
     private LocalDateTime txnDate;
 
     @Column(name = "updated_on", nullable = false)
-    @CreationTimestamp
+    @UpdateTimestamp
     private LocalDateTime updatedOn;
 
     @PrePersist
