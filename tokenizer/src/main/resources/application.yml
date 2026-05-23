@@ -1,0 +1,48 @@
+spring:
+  application:
+    name: tokenizer
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/orbit
+    username: admin
+    password: mypassword
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: false
+
+  cache:
+    type: redis
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+server:
+  servlet:
+    context-path: /orbyte/tokenizer/api/v1
+  port: 5002
+
+app:
+  environment: ${ENVIRONMENT}
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:5004/eureka/
+
+encryption:
+  aes:
+    secret-key: ${AES_SECRET_KEY} # generate your key using --- api
+    key-algorithm: AES
+    cipher-algorithm: AES/GCM/NoPadding
+    tag-length-bits: 128
+    iv-length-bytes: 12
+
+orbyte:
+  secrect: ${SECRET_ENCRYPTION_KEY}
