@@ -1,12 +1,10 @@
 package com.orbyte.tokenizer.services;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.orbyte.tokenizer.dto.BinLookupResponse;
 import com.orbyte.tokenizer.dto.CardInfo;
 import com.orbyte.tokenizer.dto.EncryptTokenResponse;
-import com.orbyte.tokenizer.exceptions.InvalidCardDetailsExecption;
-import com.orbyte.tokenizer.exceptions.PanDecryptionException;
-import com.orbyte.tokenizer.exceptions.PanEncryptionException;
-import com.orbyte.tokenizer.exceptions.TokenErrorResponseException;
+import com.orbyte.tokenizer.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -35,8 +33,9 @@ public class OrbyteTokenService {
 
     private final SecretKey secretKey;
     private final ObjectMapper mapper = new ObjectMapper();
+    private final BinService binService;
 
-    public OrbyteTokenService(@Value("${orbyte.secrect}") String base64Key) {
+    public OrbyteTokenService(@Value("${orbyte.secrect}") String base64Key, BinService binService) {
 
         log.info("Initializing OrbyteTokenService");
 
@@ -57,7 +56,7 @@ public class OrbyteTokenService {
             }
 
             this.secretKey = new SecretKeySpec(keyBytes, "AES");
-
+            this.binService = binService;
             Arrays.fill(keyBytes, (byte) 0);
 
             log.info("AES secret key initialized successfully");
@@ -87,13 +86,17 @@ public class OrbyteTokenService {
 
             log.info("PAN encrypted successfully");
 
+            BinLookupResponse binLookupResponse = binService.getBinDetails(cardInfo.getCardNumber().substring(0,6));
+
             EncryptTokenResponse response =
                     EncryptTokenResponse.builder()
                             .cardNumber(encodeCardNumber(cardInfo.getCardNumber()))
                             .expiryMonth(cardInfo.getExpiryMonth())
                             .expiryYear(cardInfo.getExpiryYear())
                             .token(token)
+                            .binDetails(binLookupResponse)
                             .build();
+
 
             cardInfo.setCardNumber("");
             cardInfo.setCvv("");
@@ -107,7 +110,11 @@ public class OrbyteTokenService {
             log.error("Invalid card details provided", ex);
             throw ex;
 
-        } catch (Exception ex) {
+        }
+        catch (BinException ex){
+            throw ex;
+        }
+        catch (Exception ex) {
 
             log.error("Exception while creating token", ex);
 
@@ -329,4 +336,6 @@ public class OrbyteTokenService {
             );
         }
     }
+
+
 }

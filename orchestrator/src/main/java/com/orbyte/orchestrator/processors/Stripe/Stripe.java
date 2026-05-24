@@ -24,7 +24,6 @@ import java.util.Map;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
 public class Stripe {
 
     private final RestClient restClient;
@@ -36,6 +35,10 @@ public class Stripe {
     private final String STRIPE_CREATE_PAYMENTINTENT_URI = "stripe_payment_intent_uri";
     private final EnumSet<PaymentType> STRIPE_SUPPORTED_PAYMENT_METHODS = EnumSet.of(PaymentType.CARD);
 
+    public Stripe (RestClient.Builder restClientBuilder, CacheService cacheService){
+        this.restClient = restClientBuilder.build();
+        this.cacheService = cacheService;
+    }
 
     private RestClient.RequestBodySpec stripePost(String uri) {
 

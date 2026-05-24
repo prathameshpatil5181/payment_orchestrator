@@ -9,12 +9,9 @@ import java.math.BigInteger;
 
 @Data
 public class PaymentRequest {
-    PaymentType  paymentType;
-
-    BigInteger amount;
-
-    String currency;
-
+    private PaymentType  paymentType;
+    private BigInteger amount;
+    private String currency;
 
     @JsonTypeInfo(
             use = JsonTypeInfo.Id.NAME,

@@ -1,18 +1,19 @@
-package com.orbyte.gateway.dto.carddto;
+package com.orbyte.gateway.dto.routerDto;
 
 import com.orbyte.constants.Processor;
-import com.orbyte.dto.PaymentRequest;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Builder
-public class CardProcRequest {
-    private Processor processor;
+public class RouterResponse {
     private Processor primaryProcessor;
     private Processor failoverProcessor;
     private Set<String> failoverCodes;
-    private PaymentRequest paymentRequest;
 }

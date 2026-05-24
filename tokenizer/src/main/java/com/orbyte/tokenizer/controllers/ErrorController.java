@@ -1,10 +1,7 @@
 package com.orbyte.tokenizer.controllers;
 
 import com.orbyte.tokenizer.dto.ErrorResponse;
-import com.orbyte.tokenizer.exceptions.InvalidCardDetailsExecption;
-import com.orbyte.tokenizer.exceptions.PanDecryptionException;
-import com.orbyte.tokenizer.exceptions.PanEncryptionException;
-import com.orbyte.tokenizer.exceptions.TokenErrorResponseException;
+import com.orbyte.tokenizer.exceptions.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +28,7 @@ public class ErrorController {
 
     @ExceptionHandler(PanDecryptionException.class)
     public ResponseEntity<ErrorResponse> panDecryptionExceptionHandler(PanDecryptionException ex){
-        ErrorResponse errorResponse = ErrorResponse.builder().message("Internal error occured").code("500").build();
+        ErrorResponse errorResponse = ErrorResponse.builder().message("Could not decrypt pan").code("500").build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
     @ExceptionHandler(PanEncryptionException.class)
@@ -39,6 +36,13 @@ public class ErrorController {
         ErrorResponse errorResponse = ErrorResponse.builder().message("Internal error occured").code("500").build();
         return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(BinException.class)
+    public ResponseEntity<ErrorResponse> binExceptionHandler(BinException ex){
+        ErrorResponse errorResponse = ErrorResponse.builder().message(ex.getMessage()).code("4XX").build();
+        return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
+    }
+
 
 
     @ExceptionHandler(TokenErrorResponseException.class)

@@ -9,11 +9,13 @@ import com.orbyte.router.entity.RoutingRules;
 import com.orbyte.router.repository.RoutingRulesRepository;
 import com.orbyte.router.routers.Router;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.math.BigInteger;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class RuleRouter implements Router {
@@ -30,12 +32,15 @@ public class RuleRouter implements Router {
     @Override
     public RouterResponse getProcessor(RouterRequest request) {
 
+        log.info("Inside RuleRouter.getProcessor {}", request);
+
         String cacheKey = buildCacheKey(request);
 
         List<RoutingRules> eligibleRules = routingRulesRepository.getCandidates(String.valueOf(request.getPaymentType()),request.getAmount(),request.getCurrency(),request.getBinBrand());
 
         if(!eligibleRules.isEmpty()){
          RoutingRules rule = eligibleRules.getFirst();
+         log.info("matched rule {}",rule);
             return RouterResponse.builder().
                     primaryProcessor(rule.getProcessor()).failoverProcessor(rule.getFallbackProcessors()).failoverCodes(null).build();
         }

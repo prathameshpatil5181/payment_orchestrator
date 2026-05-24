@@ -210,7 +210,7 @@ export default function PaymentForm() {
 
   const createCardToken = async () => {
     const { data } = await tokenizerClient.post(
-      "/orbyte/tokenizer/api/v1/cardtoken/tokenize",
+      "/orbyte/tokenizer/api/v1/cardtoken/orb_tokenize",
       {
         cardNumber: form.number,
         cvv: form.cvv,
@@ -223,7 +223,41 @@ export default function PaymentForm() {
   };
 
   const createStripePayment = async (tokenData) => {
-    const token = tokenData.tokenId;
+
+    /*
+    
+    {
+  "cardNumber": "4242424XXXXXXX4242",
+  "expiryMonth": 12,
+  "expiryYear": 34,
+  "token": "2VLGcMKdab2ES3sJvULRMapc6+drMZ270l9HPDufWv0qYEIbSmSS28mzp3AKQGZ/HEvVP275S3nVBO838M7r+Qa2bUOvoNZGet6AMafhUJ0wRCVJFczvhcQweQh6rrvk0jvOQCkRWUlX+A==",
+  "binDetails": {
+    "number": {
+      "length": null,
+      "luhn": null
+    },
+    "scheme": "visa",
+    "type": "credit",
+    "brand": "Visa Classic",
+    "country": {
+      "numeric": "826",
+      "alpha2": "GB",
+      "name": "United Kingdom of Great Britain and Northern Ireland (the)",
+      "emoji": "🇬🇧",
+      "currency": "GBP",
+      "latitude": 54,
+      "longitude": -2
+    },
+    "bank": {
+      "name": "Stripe Payments Uk Limited"
+    }
+  }
+}
+    */
+
+
+    const token = tokenData.token;
+    const binDetails = tokenData.binDetails;
     const { data } = await gatewayClient.post(
       "/gateway/initiate_payment",
       {
@@ -232,6 +266,14 @@ export default function PaymentForm() {
         currency,
         paymentMethodDetails: {
           cardToken: token,
+          binInfo: {
+            scheme: binDetails.scheme,
+            cardType: binDetails.type,
+            brand: binDetails.brand,
+            country: binDetails.country.alpha2,
+            currency: binDetails.country.currency,
+            bank: binDetails.bank.name
+          }
         }
       },
       { headerProfile: "gateway" }

@@ -46,3 +46,5 @@ encryption:
 
 orbyte:
   secrect: ${SECRET_ENCRYPTION_KEY}
+
+debug: true

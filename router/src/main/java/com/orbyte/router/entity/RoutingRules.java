@@ -3,11 +3,14 @@ package com.orbyte.router.entity;
 import com.orbyte.constants.Processor;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
+
 import java.math.BigInteger;
 
 @Entity
 @Table(name = "routing_rules")
 @Data
+@ToString
 public class RoutingRules {
 
     @Id

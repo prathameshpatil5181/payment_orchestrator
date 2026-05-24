@@ -1,14 +1,12 @@
 package com.orbyte.tokenizer.controllers;
 
-import com.orbyte.tokenizer.dto.CardInfo;
-import com.orbyte.tokenizer.dto.DecryptTokenRequestResponse;
-import com.orbyte.tokenizer.dto.EncryptTokenResponse;
-import com.orbyte.tokenizer.dto.KeyGenerationResponse;
+import com.orbyte.tokenizer.dto.*;
 import com.orbyte.tokenizer.entity.OrbToken;
 import com.orbyte.tokenizer.exceptions.TokenErrorResponseException;
 import com.orbyte.tokenizer.services.CardTokenizer;
 import com.orbyte.tokenizer.services.KeyGenerationService;
 import com.orbyte.tokenizer.services.OrbyteTokenService;
+import com.orbyte.tokenizer.services.ProcessorCardTokenService;
 import com.orbyte.tokenizer.services.impl.StripeTokenizerService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,12 +32,19 @@ public class TokenizerController {
     private final CardTokenizer tokenizer;
     private final KeyGenerationService keyGenerationService;
     private final OrbyteTokenService orbyteTokenService;
+    private final ProcessorCardTokenService processorCardTokenService;
 
-    @PostMapping("/tokenize")
+    @PostMapping("/get_processor_token")
+    public ResponseEntity<ProcessorTokenResponse> createProcessorToken(@RequestBody ProcessorTokenRequest processorTokenRequest) {
+            ProcessorTokenResponse response = processorCardTokenService.getToken(processorTokenRequest);
+            return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @GetMapping("/tokenize")
     public ResponseEntity<OrbToken> createToken(@RequestBody CardInfo cardInfo) {
 
-            OrbToken token = tokenizer.createCardToken(cardInfo);
-            return new ResponseEntity<>(token, HttpStatus.OK);
+        OrbToken token = tokenizer.createCardToken(cardInfo);
+        return new ResponseEntity<>(token, HttpStatus.OK);
 
     }
 
@@ -58,7 +63,8 @@ public class TokenizerController {
 
     @PostMapping("/orb_decrypt")
     public ResponseEntity<DecryptTokenRequestResponse> decryptOrbToken(@RequestBody DecryptTokenRequestResponse request) {
-        if (!Objects.equals(request.getPassword(), password)){
+        log.info("orb_decrypt route");
+        if (!Objects.equals(request.getSecret(), password)){
             return new ResponseEntity<>(request,HttpStatus.BAD_REQUEST);
         }
         CardInfo response = orbyteTokenService.getDecryptedPan(request.getToken());

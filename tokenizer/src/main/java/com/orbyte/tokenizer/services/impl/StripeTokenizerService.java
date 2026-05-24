@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.orbyte.constants.ModifiedBy;
 import com.orbyte.constants.PaymentType;
+import com.orbyte.constants.Processor;
 import com.orbyte.constants.TokenProviders;
 import com.orbyte.tokenizer.cache.CacheService;
 import com.orbyte.tokenizer.constants.TokenizerConstants;
@@ -36,6 +37,12 @@ public class StripeTokenizerService implements CardTokenizer {
 
     private final OrbTokenRepository orbTokenRepository;
     private final CacheService cacheService;
+
+
+    @Override
+    public Processor getProcessor() {
+        return Processor.STRIPE;
+    }
 
     @Transactional
     public OrbToken createCardToken(@NonNull CardInfo cardInfo) {

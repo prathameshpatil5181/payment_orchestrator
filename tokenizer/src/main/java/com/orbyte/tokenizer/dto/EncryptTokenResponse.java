@@ -3,6 +3,7 @@ package com.orbyte.tokenizer.dto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 @Builder
 @AllArgsConstructor
@@ -12,4 +13,5 @@ public class EncryptTokenResponse {
     private int expiryMonth;
     private int expiryYear;
     private String token;
+    private BinLookupResponse binDetails;
 }

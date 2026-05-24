@@ -3,8 +3,8 @@ package com.orbyte.orchestrator.entity;
 import com.orbyte.constants.TxnStatus;
 import com.orbyte.constants.TxnSubStatus;
 import jakarta.persistence.*;
-import org.hibernate.annotations.CreationTimestamp;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigInteger;
@@ -12,17 +12,16 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Entity
-@Table(name = "txn")
+@Table(name = "failover_txn")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Txn {
+public class FailoverTxn {
 
     @Id
     @Column(name = "txn_id", nullable = false, updatable = false)
-    private UUID txnId;
+    private UUID failed_txn_id;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false, length = 100)
@@ -63,9 +62,6 @@ public class Txn {
     @Column(name = "updated_on", nullable = false)
     @UpdateTimestamp
     private LocalDateTime updatedOn;
-
-    @Column(name = "is_failed_first")
-    private Boolean isFailedFirst = false;
 
     @PrePersist
     protected void onCreate() {
