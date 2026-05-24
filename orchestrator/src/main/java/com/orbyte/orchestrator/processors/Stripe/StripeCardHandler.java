@@ -8,10 +8,14 @@ import com.orbyte.constants.TxnSubStatus;
 import com.orbyte.dto.PaymentRequest;
 import com.orbyte.dto.paymentTypeDtos.CardPaymentDetails;
 import com.orbyte.dto.paymentTypeDtos.PaymentMethodDetails;
+import com.orbyte.orchestrator.constants.AppContants;
+import com.orbyte.orchestrator.dtos.ProcessorTokenRequest;
+import com.orbyte.orchestrator.dtos.ProcessorTokenResponse;
 import com.orbyte.orchestrator.dtos.StripeDtos.CardTxnResult;
 import com.orbyte.orchestrator.processors.Stripe.dto.PaymentIntentResponse;
 import com.orbyte.orchestrator.processors.Stripe.dto.PaymentMethodResponse;
 import com.orbyte.orchestrator.service.Card;
+import com.orbyte.orchestrator.service.impl.RestService;
 import com.orbyte.utils.TimeUtil;
 import com.orbyte.utils.Utility;
 import io.netty.util.internal.StringUtil;
@@ -34,6 +38,8 @@ public class StripeCardHandler implements Card {
 
    private final Stripe stripe;
 
+   private final RestService restService;
+
     @Override
     public Processor getProcessor() {
         return Processor.STRIPE;
@@ -43,10 +49,28 @@ public class StripeCardHandler implements Card {
     public CardTxnResult process(PaymentRequest paymentRequest) {
 
         CardPaymentDetails cardPaymentDetails = cardDetailValidator(paymentRequest.getPaymentMethodDetails());
+        ProcessorTokenResponse processorTokenResponse;
+        try{
+            processorTokenResponse = getToken(cardPaymentDetails.getCardToken());
+        }catch (HttpClientErrorException ex) {
+            return CardTxnResult.builder().status(TxnStatus.CAPTURE).subStatus(TxnSubStatus.FAILED).description("Tokenization failed").procTxnStatus(null).processorTxnId(null).txnDate(LocalDateTime.now()).redirect_url(null).declinedCode(null).httpStatusCode(ex.getStatusCode()).build();
+        }
+        catch (Exception parseEx) {
+
+            log.error(
+                    "Failed to parse error response",
+                    parseEx
+            );
+
+            throw new RuntimeException("Failed to parse error response");
+        }
+
 
         MultiValueMap<String, Object> cardForm = new LinkedMultiValueMap<>();
         cardForm.set("type", "card");
-        cardForm.set("card[token]", cardPaymentDetails.getCardToken());
+        cardForm.set("card[token]", processorTokenResponse.getProcessorToken());
+
+
 
         PaymentMethodResponse paymentMethodResponse  = stripe.createPaymentMethod(cardForm);
 
@@ -108,6 +132,13 @@ public class StripeCardHandler implements Card {
         else{
             throw new IllegalArgumentException("Invalid card Request parameters");
         }
+
+    }
+
+    private ProcessorTokenResponse getToken(String orbToken){
+        ProcessorTokenRequest processorTokenRequest = ProcessorTokenRequest.builder().processor(getProcessor()).OrbToken(orbToken).build();
+
+        return restService.getRestEurkaClient().post().uri(AppContants.TOKENIZER_GET_PROCESSOR_TOKEN_URI).body(processorTokenRequest).retrieve().body(ProcessorTokenResponse.class);
 
     }
 }

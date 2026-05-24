@@ -5,9 +5,14 @@ import com.orbyte.dto.PaymentRequest;
 import lombok.Builder;
 import lombok.Data;
 
+import java.util.Set;
+
 @Data
 @Builder
 public class CardProcRequest {
-    Processor processor;
-    PaymentRequest paymentRequest;
+    private Processor processor;
+    private Processor primaryProcessor;
+    private Processor failoverProcessor;
+    private Set<String> failoverCodes;
+    private PaymentRequest paymentRequest;
 }

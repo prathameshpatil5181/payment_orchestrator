@@ -24,4 +24,5 @@ public class ErrorController {
 
         return new ResponseEntity<>(error,ex.getHttpStatusCode());
     }
+
 }

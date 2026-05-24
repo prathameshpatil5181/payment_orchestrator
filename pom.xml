@@ -14,6 +14,7 @@
     <module>utilities</module>
     <module>gateway</module>
     <module>serviceregistory</module>
+    <module>router</module>
   </modules>
 
 

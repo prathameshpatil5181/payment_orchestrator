@@ -10,4 +10,7 @@ public class AppContants {
     public static String PAYMENT_SESSION_URI_PREFIX = "http://localhost:5003";
 
     public static String TRANSACTION_ID_CREATE_URI = "http://orchestrator/orbyte/orchestrator/api/v1/txn/create";
+
+    public static String ROUTER_URI = "http://router/orbyte/router/api/v1/route/get_processor";
+
 }

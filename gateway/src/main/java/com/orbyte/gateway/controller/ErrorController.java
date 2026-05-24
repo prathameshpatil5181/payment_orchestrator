@@ -3,6 +3,8 @@ package com.orbyte.gateway.controller;
 import com.orbyte.gateway.dto.carddto.CardErrorResponseDto;
 import com.orbyte.gateway.dto.dtoimpl.ErrorHandlerDto;
 import com.orbyte.gateway.exception.CardTransactionFailedException;
+import com.orbyte.gateway.exception.TransactionProcessionException;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,5 +24,9 @@ public class ErrorController {
 
         return new ResponseEntity<>(error,ex.getHttpStatusCode());
     }
-
+    @ExceptionHandler(TransactionProcessionException.class)
+    public ResponseEntity<ErrorHandlerDto> transactionProcessingException(TransactionProcessionException ex){
+        ErrorHandlerDto error = ErrorHandlerDto.builder().message(ex.getMessage()).status("FAILED").build();
+        return new ResponseEntity<>(error, HttpStatus.NOT_IMPLEMENTED);
+    }
 }

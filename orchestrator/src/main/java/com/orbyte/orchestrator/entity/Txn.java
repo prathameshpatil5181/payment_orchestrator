@@ -64,6 +64,9 @@ public class Txn {
     @UpdateTimestamp
     private LocalDateTime updatedOn;
 
+    @Column(name = "is_failed_first")
+    private Boolean isFailedFirst = false;
+
     @PrePersist
     protected void onCreate() {
         if (this.createdOn == null) {
