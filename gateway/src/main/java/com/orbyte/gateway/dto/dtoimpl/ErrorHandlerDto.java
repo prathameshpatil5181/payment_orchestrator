@@ -9,5 +9,6 @@ import lombok.*;
 @NoArgsConstructor
 public class ErrorHandlerDto {
     private String status;
+    private String subStatus;
     private String message;
 }

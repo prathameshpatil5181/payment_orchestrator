@@ -96,6 +96,23 @@ function CheckIcon() {
   );
 }
 
+function FailIcon() {
+  return (
+    <svg
+      width="30"
+      height="30"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#dc2626"
+      strokeWidth="2.5"
+      strokeLinecap="round"
+    >
+      <line x1="18" y1="6" x2="6" y2="18" />
+      <line x1="6" y1="6" x2="18" y2="18" />
+    </svg>
+  );
+}
+
 function CreditIcon() {
   return (
     <svg
@@ -147,6 +164,7 @@ export default function PaymentForm() {
   const [cvvFocus, setCvvFocus] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [failure, setFailure] = useState(null);
   const [btnError, setBtnError] = useState(false);
 
   const [form, setForm] = useState({
@@ -262,37 +280,50 @@ export default function PaymentForm() {
       return;
     }
     setLoading(true);
+    setFailure(null);
 
     try {
       const tokenData = await mutation.mutateAsync();
-      await createStripePayment(tokenData);
+      const paymentResponse = await createStripePayment(tokenData);
+
+      // Check subStatus from response body
+      if (paymentResponse?.subStatus === "FAILED") {
+        setFailure({
+          message: paymentResponse?.message || "Payment was declined by the processor.",
+          code: paymentResponse?.subStatus,
+        });
+        return;
+      }
 
       setSuccess(true);
     } catch (err) {
       console.error(err);
+      const status = err?.response?.status;
+      const respData = err?.response?.data;
+
+      // Check subStatus in error response body too
+      if (respData?.subStatus === "FAILED" || (status && status >= 400)) {
+        setFailure({
+          message:
+            respData?.message ||
+            respData?.error ||
+            (status >= 500
+              ? "Something went wrong on our end. Please try again later."
+              : "Payment could not be processed. Please check your details and try again."),
+          code: status ? `HTTP ${status}` : respData?.subStatus || "ERROR",
+        });
+      } else {
+        setFailure({
+          message: err.message || "An unexpected error occurred.",
+          code: "ERROR",
+        });
+      }
     } finally {
       setLoading(false);
     }
   };
 
-  const reset = () => {
-    setSuccess(false);
-    setForm({
-      name: "",
-      number: "",
-      expiry: "",
-      cvv: "",
-      phone: "",
-      countryCode: "+91",
-      address1: "",
-      address2: "",
-      city: "",
-      state: "",
-      zip: "",
-      country: "India",
-    });
-    setErrors({});
-  };
+
 
   const numDisplay = (() => {
     let raw = form.number.replace(/\s/g, "").padEnd(16, "•");
@@ -359,7 +390,15 @@ export default function PaymentForm() {
 
           {/* Form */}
           <div className="pf-form-card">
-            {success ? (
+            {failure ? (
+              <div className="pf-failure">
+                <div className="pf-failure-circle">
+                  <FailIcon />
+                </div>
+                <h3>Payment failed</h3>
+                <p>{failure.message}</p>
+              </div>
+            ) : success ? (
               <div className="pf-success">
                 <div className="pf-success-circle">
                   <CheckIcon />
@@ -369,9 +408,6 @@ export default function PaymentForm() {
                   Your transaction has been processed securely. A confirmation
                   has been sent to your details.
                 </p>
-                <button className="pf-success-btn" onClick={reset}>
-                  Make another payment
-                </button>
               </div>
             ) : (
               <>

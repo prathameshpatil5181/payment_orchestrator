@@ -7,11 +7,13 @@ import com.orbyte.dto.PaymentRequest;
 import com.orbyte.dto.paymentTypeDtos.CardPaymentDetails;
 import com.orbyte.dto.paymentTypeDtos.PaymentMethodDetails;
 import com.orbyte.gateway.constants.AppContants;
+import com.orbyte.gateway.dto.OrbPaymentResponse;
 import com.orbyte.gateway.dto.carddto.CardPaymentDto;
 import com.orbyte.gateway.dto.carddto.CardProcRequest;
 import com.orbyte.gateway.dto.carddto.OrchCardErrorResponseDto;
 import com.orbyte.gateway.dto.routerDto.RouterRequest;
 import com.orbyte.gateway.dto.routerDto.RouterResponse;
+import com.orbyte.gateway.dto.routerDto.TxnResponse;
 import com.orbyte.gateway.exception.CardTransactionFailedException;
 import com.orbyte.gateway.exception.TransactionProcessionException;
 import com.orbyte.gateway.service.PaymentHandler;
@@ -28,6 +30,8 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.ObjectMapper;
+
+import java.math.BigInteger;
 
 
 @Service
@@ -51,7 +55,7 @@ public class CardProcessorService implements PaymentHandler  {
     }
 
     @Override
-    public Object process(@NonNull  String transactionId, @NonNull  PaymentRequest paymentRequest) {
+    public OrbPaymentResponse process(@NonNull  String transactionId, @NonNull  PaymentRequest paymentRequest) {
     // method processing
         log.info("Inside CardProcessorService.process");
         //validate payment card
@@ -84,7 +88,7 @@ public class CardProcessorService implements PaymentHandler  {
             CardProcRequest cardProcRequest = CardProcRequest.builder().processor(routerResponse.getPrimaryProcessor()).paymentRequest(paymentRequest).failoverProcessor(routerResponse.getFailoverProcessor()).failoverCodes(routerResponse.getFailoverCodes()).build();
 
             try{
-                return restClient.post()
+                TxnResponse txnResponse = restClient.post()
                         .uri(uriBuilder -> uriBuilder
                                 .scheme("http")
                                 .host("orchestrator")
@@ -93,24 +97,28 @@ public class CardProcessorService implements PaymentHandler  {
                                 .build())
                         .body(cardProcRequest)
                         .retrieve()
-                        .body(String.class);
+                        .body(TxnResponse.class);
+
+                if(txnResponse==null){
+                    throw new NullPointerException("null txn result");
+                }
+
+                return OrbPaymentResponse.builder()
+                        .txnId(txnResponse.getProcTxnId())
+                        .status(String.valueOf(txnResponse.getStatus()))
+                        .subStatus(String.valueOf(txnResponse.getSubStatus()))
+                        .paymentMethod(txnResponse.getPaymentMethod())
+                        .amount(txnResponse.getAmount())
+                        .currency(txnResponse.getCurrency())
+                        .txnDate(txnResponse.getTxnDate())
+                        .redirectUrl(null)
+                        .build();
+
             }
             catch (HttpClientErrorException ex){
                 log.error("Client Error {}",ex.getResponseBodyAsString());
 
                 JsonNode error  = Utility.parseJson(ex.getResponseBodyAsString());
-
-                /**
-                 *              String message,
-                 *             String code,
-                 *             String subCode,
-                 *             String txnId,
-                 *             String txnStatus,
-                 *             String txnSubStatus,
-                 *             String processor,
-                 *             HttpStatusCode httpStatusCode
-                 */
-
 
                 throw new CardTransactionFailedException(error.path("message").asText(),
                         error.path("code").asText(),
@@ -148,5 +156,18 @@ public class CardProcessorService implements PaymentHandler  {
         }
 
     }
+
+    /**
+     *     private String txnId;
+     *     private String status;
+     *     private String subStatus;
+     *     private String paymentMethod;
+     *     private BigInteger amount;
+     *     private String currency;
+     *     private String txnDate;
+     *     private String redirectUrl;
+     */
+
+
 
 }
