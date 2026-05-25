@@ -14,8 +14,8 @@ public class ErrorController {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorHandlerDto> globalExceptionHandler(Exception ex){
-        ErrorHandlerDto error = ErrorHandlerDto.builder().status("FAILED").message(ex.getMessage()).build();
-        return ResponseEntity.ok().body(error);
+        ErrorHandlerDto error = ErrorHandlerDto.builder().status("FAILED").subStatus("FAILED").message(ex.getMessage()).build();
+        return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(CardTransactionFailedException.class)

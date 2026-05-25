@@ -106,7 +106,7 @@ public class StripeCardHandler implements Card {
 
             return CardTxnResult.builder().status(TxnStatus.CAPTURE).subStatus(TxnSubStatus.FAILED).description(error.path("message").asText()).procTxnStatus(error.path("code").asText()).processorTxnId(procTxnId).txnDate(txnDate).redirect_url(null).declinedCode(error.path("decline_code").asText()).httpStatusCode(ex.getStatusCode()).build();
 
-        }
+        }    
         catch (Exception parseEx) {
 
             log.error(
