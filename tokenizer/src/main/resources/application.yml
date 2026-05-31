@@ -3,7 +3,7 @@ spring:
     name: tokenizer
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/orbit
+    url: jdbc:postgresql://orbit-postgres:5432/orbit
     username: admin
     password: mypassword
 
@@ -20,7 +20,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: redis-server
       port: 6379
 
 server:
@@ -29,12 +29,14 @@ server:
   port: 5002
 
 app:
-  environment: ${ENVIRONMENT}
+  environment: dev
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:5004/eureka/
+      defaultZone: http://serviceregistory:5004/eureka/
+  instance:
+    prefer-ip-address: true
 
 encryption:
   aes:
@@ -45,6 +47,6 @@ encryption:
     iv-length-bytes: 12
 
 orbyte:
-  secrect: ${SECRET_ENCRYPTION_KEY}
+  secret: ${SECRET_ENCRYPTION_KEY}
 
 debug: true
