@@ -3,9 +3,9 @@ spring:
     name: tokenizer
 
   datasource:
-    url: jdbc:postgresql://orbit-postgres:5432/orbit
-    username: admin
-    password: mypassword
+    url: ${DB_URL}
+    username: ${DB_USR}
+    password: ${DB_PASS}
 
   jpa:
     hibernate:
@@ -31,11 +31,19 @@ server:
 app:
   environment: dev
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+
 eureka:
   client:
     serviceUrl:
       defaultZone: http://serviceregistory:5004/eureka/
+
   instance:
+    health-check-url-path: ${server.servlet.context-path}/manage/health
     prefer-ip-address: true
 
 encryption:

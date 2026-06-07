@@ -1,7 +1,8 @@
 services:
 
   serviceregistory:
-    image: serviceregistory
+#    image: serviceregistory
+    image: orch-service-reg:v1
     container_name: serviceregistory
     build:
       context: .
@@ -12,11 +13,16 @@ services:
       - orbit_net
 
   gateway:
-    image: gateway
+    image: orch-service-reg:v1
     container_name: gateway
     build:
       context: .
       dockerfile: gateway/Dockerfile
+    environment:
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
     ports:
       - "5003:5003"
     depends_on:
@@ -30,12 +36,18 @@ services:
     build:
       context: .
       dockerfile: orchestrator/Dockerfile
+    environment:
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
     ports:
       - "5001:5001"
     depends_on:
       - serviceregistory
     networks:
       - orbit_net
+
 
   router:
     image: router
@@ -44,7 +56,10 @@ services:
       context: .
       dockerfile: router/Dockerfile
     environment:
-      SECRET_ENCRYPTION_KEY: P8iQjgAlOyP4DEo4olgCUJYRMbOKeEVoz/GisNz1TOA=
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
     ports:
       - "5005:5005"
     depends_on:
@@ -60,12 +75,15 @@ services:
     build:
       context: .
       dockerfile: tokenizer/Dockerfile
+    environment:
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
     ports:
-      - "5002:5002"
+        - "5002:5002"
     depends_on:
       - serviceregistory
-    environment:
-      SECRET_ENCRYPTION_KEY: {sec}
     networks:
       - orbit_net
 
