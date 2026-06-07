@@ -35,7 +35,7 @@ public class OrbyteTokenService {
     private final ObjectMapper mapper = new ObjectMapper();
     private final BinService binService;
 
-    public OrbyteTokenService(@Value("${orbyte.secrect}") String base64Key, BinService binService) {
+    public OrbyteTokenService(@Value("${orbyte.secret}") String base64Key, BinService binService) {
 
         log.info("Initializing OrbyteTokenService");
 

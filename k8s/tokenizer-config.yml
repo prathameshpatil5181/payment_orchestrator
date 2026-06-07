@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name:  tokenizer-deployment
+  namespace: payment-orch
+spec:
+  selector:
+    matchLabels:
+      app:  tokenizer
+  template:
+    metadata:
+      labels:
+        app:  tokenizer
+    spec:
+      containers:
+      - name:  tokenizer
+        image: pratham12102001/tokenizer:v1-0606261231
+        resources:
+          requests:
+            cpu: "250m"
+            memory: "256Mi"
+          limits:
+            cpu: "1000m"
+            memory: "512Mi"
+        ports:
+        - containerPort: 5002
+        env:
+        - name: AES_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: orch-secrets
+              key: AES_SECRET_KEY
+        - name: DB_PASS
+          valueFrom:
+            secretKeyRef:
+              name: orch-secrets
+              key: DB_PASS 
+        - name: DB_URL
+          valueFrom:
+            secretKeyRef:
+              name: orch-secrets
+              key: DB_URL
+        - name: DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: orch-secrets
+              key: DB_USER 
+        - name: SECRET_ENCRYPTION_KEY
+          valueFrom:
+            secretKeyRef:
+              name: orch-secrets
+              key: SECRET_ENCRYPTION_KEY 
+
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name:  tokenizer
+  namespace: payment-orch
+spec:
+  selector:
+    app:  tokenizer
+  ports:
+  - port: 5002
+    targetPort: 5002

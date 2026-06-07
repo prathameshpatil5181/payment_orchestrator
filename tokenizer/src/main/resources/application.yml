@@ -3,9 +3,9 @@ spring:
     name: tokenizer
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/orbit
-    username: admin
-    password: mypassword
+    url: ${DB_URL}
+    username: ${DB_USR}
+    password: ${DB_PASS}
 
   jpa:
     hibernate:
@@ -20,7 +20,7 @@ spring:
 
   data:
     redis:
-      host: localhost
+      host: redis-server
       port: 6379
 
 server:
@@ -29,12 +29,22 @@ server:
   port: 5002
 
 app:
-  environment: ${ENVIRONMENT}
+  environment: dev
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
 
 eureka:
   client:
     serviceUrl:
-      defaultZone: http://localhost:5004/eureka/
+      defaultZone: http://serviceregistory:5004/eureka/
+
+  instance:
+    health-check-url-path: ${server.servlet.context-path}/manage/health
+    prefer-ip-address: true
 
 encryption:
   aes:
@@ -45,6 +55,6 @@ encryption:
     iv-length-bytes: 12
 
 orbyte:
-  secrect: ${SECRET_ENCRYPTION_KEY}
+  secret: ${SECRET_ENCRYPTION_KEY}
 
 debug: true

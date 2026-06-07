@@ -1,0 +1,130 @@
+services:
+
+  serviceregistory:
+#    image: serviceregistory
+    image: orch-service-reg:v1
+    container_name: serviceregistory
+    build:
+      context: .
+      dockerfile: serviceregistory/Dockerfile
+    ports:
+      - "5004:5004"
+    networks:
+      - orbit_net
+
+  gateway:
+    image: orch-service-reg:v1
+    container_name: gateway
+    build:
+      context: .
+      dockerfile: gateway/Dockerfile
+    environment:
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    ports:
+      - "5003:5003"
+    depends_on:
+      - serviceregistory
+    networks:
+      - orbit_net
+
+  orchestrator:
+    image: orchestrator
+    container_name: orchestrator
+    build:
+      context: .
+      dockerfile: orchestrator/Dockerfile
+    environment:
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    ports:
+      - "5001:5001"
+    depends_on:
+      - serviceregistory
+    networks:
+      - orbit_net
+
+
+  router:
+    image: router
+    container_name: router
+    build:
+      context: .
+      dockerfile: router/Dockerfile
+    environment:
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    ports:
+      - "5005:5005"
+    depends_on:
+      - serviceregistory
+    networks:
+      - orbit_net
+
+
+
+  tokenizer:
+    image: tokenizer
+    container_name: tokenizer
+    build:
+      context: .
+      dockerfile: tokenizer/Dockerfile
+    environment:
+      SECRET_ENCRYPTION_KEY: ${SECRET_ENCRYPTION_KEY}
+      DB_URL: ${DB_URL}
+      DB_USER: ${DB_USER}
+      DB_PASS: ${DB_PASS}
+    ports:
+        - "5002:5002"
+    depends_on:
+      - serviceregistory
+    networks:
+      - orbit_net
+
+
+
+#  redis-server:
+#    container_name: redis-server
+#    image: redis:latest
+#    ports:
+#      - "6379:6379"
+#    networks:
+#      - orbit_net
+#    restart: unless-stopped
+#
+#  redis-insight:
+#    container_name: redis-insight
+#    image: redis/redisinsight:latest
+#    ports:
+#      - "5540:5540"
+#    networks:
+#      - orbit_net
+#    depends_on:
+#      - redis-server
+#    restart: unless-stopped
+#
+#  orbit-postgres:
+#    container_name: orbit-postgres
+#    image: postgres:18.3-alpine
+#    ports:
+#      - "5440:5432"
+#    environment:
+#      POSTGRES_DB: orbit
+#      POSTGRES_USER: admin
+#      POSTGRES_PASSWORD: mypassword
+#    volumes:
+#      - /home/coder/projects/db/pgdata:/var/lib/postgresql/18/docker
+#    networks:
+#      - orbit_net
+#    restart: unless-stopped
+
+networks:
+  orbit_net:
+    name: orbit_net
+    driver: bridge
